@@ -54,7 +54,7 @@ contract DerivativeFactory is Ownable {
         address orgAccount = DT_Store.getOrgAccount();
         uint256 _fee = DT_Store.getNewOptionFee();
         // Before creation creator should have to pay the service fee to wandx Platform
-        require(IERC20(wandTokenAddress).transferFrom(msg.sender, orgAccount, _fee));
+        // require(IERC20(wandTokenAddress).transferFrom(msg.sender, orgAccount, _fee));
         address _optionAddress = new Option(_baseToken, _quoteToken, _strikePrice, msg.sender);    
         DT_Store.setOptionFactoryData(msg.sender, _optionAddress);
         emit LogOptionCreated (_baseToken, _quoteToken, _optionAddress, msg.sender);

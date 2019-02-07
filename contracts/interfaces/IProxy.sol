@@ -8,11 +8,11 @@ interface IProxy {
      * @param _amount Number of the assets seller want to excercised
      * @return bool success
      */
-    function distributeStakes(address _to, uint256 _amount) public returns (bool success);
+    function distributeStakes(address _to, uint256 _amount) external returns (bool success);
 
     /**
      * @dev withdraw the unused base token and quote token only by owner
-     * @return bool success    
+     * @return bool success
      */
-    function withdrawal() public returns (bool success);
+    function withdrawal() external returns (bool success);
 }

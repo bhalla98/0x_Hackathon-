@@ -20,7 +20,7 @@ contract Option is IOption, StandardToken {
     address public buyer;
     // Address of the BaseToken act as the underlying securities
     address public baseToken;
-    // Address of the QuoteToken use to pay the premium. 
+    // Address of the QuoteToken use to pay the premium.
     address public quoteToken;
     // Price at which buyer will obligate to buy the base token
     uint256 public strikePrice;
@@ -30,7 +30,7 @@ contract Option is IOption, StandardToken {
     uint256 public expiry;
 
     bool public isOptionIssued = false;
-    
+
     uint8 public decimals = 0;
 
     // Notifications
@@ -40,7 +40,7 @@ contract Option is IOption, StandardToken {
 
     struct TraderData {
         uint256 optionQuantity;
-        bool status;                        // false when it doesn't excercise the full option Quantity, True when fully excercised 
+        bool status;                        // false when it doesn't excercise the full option Quantity, True when fully excercised
     }
 
     mapping(address => TraderData) public Traders;
@@ -49,17 +49,17 @@ contract Option is IOption, StandardToken {
         require(msg.sender == buyer);
         _;
     }
-    
+
     /**
      * @dev `Option` Constructor
      */
 
-    constructor ( 
-        address _baseToken, 
+    constructor (
+        address _baseToken,
         address _quoteToken,
         uint256 _strikePrice,
         address _buyer
-        ) public 
+        ) public
     {
         require(_buyer != address(0) && _quoteToken != address(0) && _baseToken != address(0));
         require(_strikePrice > 0);
@@ -88,7 +88,7 @@ contract Option is IOption, StandardToken {
         expiry = _expiry;
         isOptionIssued = true;
         require(IERC20(quoteToken).transferFrom(buyer, tokenProxy, assets));
-        Transfer(address(0), address(this), _assetsOffered);
+        emit Transfer(address(0), address(this), _assetsOffered);
         emit LogOptionsIssued(_assetsOffered, expiry, premium, tokenProxy);
     }
 
@@ -104,7 +104,7 @@ contract Option is IOption, StandardToken {
         totalSupply_ = totalSupply_.add(_extraOffering);
         balances[address(this)] = balances[address(this)].add(_extraOffering);
         require(IERC20(quoteToken).transferFrom(buyer, tokenProxy, extraOffering));
-        Transfer(address(0), address(this), _extraOffering);
+        emit Transfer(address(0), address(this), _extraOffering);
         emit LogOptionsIssued(totalSupply_, expiry, premium, tokenProxy);
     }
 
@@ -121,7 +121,7 @@ contract Option is IOption, StandardToken {
         require(this.transfer(msg.sender,_amount));
         emit LogOptionsTrade(msg.sender, _amount, now);
     }
-    
+
     /**
      * @dev `exerciseOption` This function use to excercise the option means to sell the option to the owner again
      * @param _amount no. of option trader want to exercise
@@ -129,11 +129,11 @@ contract Option is IOption, StandardToken {
      */
     function exerciseOption(uint256 _amount) external returns (bool) {
         require(_amount > 0);
-        require(expiry >= block.number);      
+        require(expiry >= block.number);
         require(this.balanceOf(msg.sender) >= _amount);
         require(IProxy(tokenProxy).distributeStakes(msg.sender, _amount));
         // Provide allowance to this by the trader
-        require(this.transferFrom(msg.sender, optionDumperAddress, _amount)); 
+        require(this.transferFrom(msg.sender, optionDumperAddress, _amount));
         Traders[msg.sender].optionQuantity = Traders[msg.sender].optionQuantity.sub(_amount);
         emit LogOptionsExcercised(msg.sender, _amount, now);
         return true;
@@ -163,6 +163,6 @@ contract Option is IOption, StandardToken {
             premium,
             totalSupply_
         );
-    } 
+    }
 
 }
